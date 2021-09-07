@@ -4,7 +4,7 @@ package com.cinar.divisiongame.playertwo.game.view.controller;
 import com.cinar.divisiongame.common.domain.Game;
 import com.cinar.divisiongame.common.domain.enums.GameMode;
 import com.cinar.divisiongame.common.dto.GameDto;
-import com.cinar.divisiongame.playertwo.game.core.PlayerManager;
+import com.cinar.divisiongame.playertwo.game.core.manager.PlayerManager;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

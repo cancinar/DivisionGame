@@ -1,4 +1,4 @@
-package com.cinar.divisiongame.playerone.game.core.config;
+package com.cinar.divisiongame.common.config;
 
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.amqp.core.Binding;
@@ -6,13 +6,11 @@ import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.QueueBuilder;
-import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
-import org.springframework.boot.autoconfigure.r2dbc.ConnectionFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -25,23 +23,47 @@ public class RabbitMQConfig {
   }
 
   @Bean
-  DirectExchange exchange() {
+  DirectExchange playerOneExchange() {
     return new DirectExchange("playerOneExchange");
   }
+
+  @Bean
+  DirectExchange playerTwoExchange() {
+    return new DirectExchange("playerTwoExchange");
+  }
+
 
   @Bean
   Queue dlq() {
     return QueueBuilder.durable("deadLetter.queue").build();
   }
 
+
   @Bean
-  Queue queue() {
+  Queue playerTwoQueue() {
+    return QueueBuilder
+        .durable("playertwogame.queue")
+        .withArgument("x-dead-letter-exchange", "deadLetterExchange")
+        .withArgument("x-dead-letter-routing-key", "deadLetter")
+        .build();
+  }
+
+  @Bean
+  Queue playerOneQueue() {
     return QueueBuilder
         .durable("playeronegame.queue")
         .withArgument("x-dead-letter-exchange", "deadLetterExchange")
         .withArgument("x-dead-letter-routing-key", "deadLetter")
         .build();
   }
+
+  @Bean
+  Binding playerTwoBinding() {
+    return BindingBuilder.bind(playerTwoQueue())
+        .to(playerTwoExchange())
+        .with("playertwogame");
+  }
+
 
   @Bean
   Binding DLQBinding() {
@@ -51,9 +73,9 @@ public class RabbitMQConfig {
   }
 
   @Bean
-  Binding binding() {
-    return BindingBuilder.bind(queue())
-        .to(exchange())
+  Binding playerOneBinding() {
+    return BindingBuilder.bind(playerOneQueue())
+        .to(playerOneExchange())
         .with("playeronegame");
   }
 
@@ -61,7 +83,7 @@ public class RabbitMQConfig {
   SimpleMessageListenerContainer container(ConnectionFactory connectionFactory) {
     SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
     container.setConnectionFactory(connectionFactory);
-    container.setQueues(queue());
+    container.setQueues(playerOneQueue(), playerTwoQueue());
     return container;
   }
 

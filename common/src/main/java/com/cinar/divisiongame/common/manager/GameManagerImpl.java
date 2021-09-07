@@ -1,4 +1,4 @@
-package com.cinar.divisiongame.common;
+package com.cinar.divisiongame.common.manager;
 
 
 import com.cinar.divisiongame.common.domain.Game;
@@ -9,8 +9,10 @@ import com.cinar.divisiongame.common.domain.enums.Player;
 import com.cinar.divisiongame.common.exception.GameAlreadyStartedException;
 import com.cinar.divisiongame.common.exception.NoGameFoundException;
 import com.cinar.divisiongame.common.exception.NotYourTurnException;
+import org.springframework.stereotype.Component;
 
-public class GameManager {
+@Component
+class GameManagerImpl implements GameManager {
 
   private Game currentGame;
   protected static final String NO_GAME_FOUND = "No game is found!";
