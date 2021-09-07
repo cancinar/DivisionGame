@@ -1,0 +1,27 @@
+version: "3.2"
+services:
+  playerOneApplication:
+    image: playerone
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - rabbitmq-service
+    command: bash -c "java -jar playerone.jar"
+  playerTwoApplication:
+    image: playertwo
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    depends_on:
+      - rabbitmq-service
+    command: bash -c "java -jar playertwo.jar"
+  rabbitmq-service:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
